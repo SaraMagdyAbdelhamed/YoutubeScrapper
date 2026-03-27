@@ -142,4 +142,25 @@
             {{ $playlists->links('pagination::bootstrap-5') }}
         </div>
     </div>
+
+    @if(session('success'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                let initialCheckDelay = setTimeout(() => {
+                    let checkInterval = setInterval(() => {
+                        fetch('{{ route("scrape.status") }}')
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.jobs_count === 0) {
+                                    clearInterval(checkInterval);
+                                    alert('🎉 تم الانتهاء من جلب جميع الدورات والتحليلات بنجاح!');
+                                    window.location.reload();
+                                }
+                            })
+                            .catch(error => console.error('Error checking status:', error));
+                    }, 4000); // Poll every 4 seconds
+                }, 2000); // Wait 2s before first poll to ensure jobs DB is locked
+            });
+        </script>
+    @endif
 @endsection

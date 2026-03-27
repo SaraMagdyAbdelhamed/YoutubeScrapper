@@ -7,6 +7,8 @@ use App\Jobs\ScrapeCategoryJob;
 use App\Repositories\Interfaces\CategoryRepositoryInterface;
 use App\Repositories\Interfaces\PlaylistRepositoryInterface;
 
+use App\Http\Requests\ScrapeCategoryRequest;
+
 class ScraperController extends Controller
 {
     public function __construct(
@@ -20,6 +22,7 @@ class ScraperController extends Controller
         $categoryId = $request->get('category_id');
 
         $playlists = $this->playlistRepository->getFilteredWithPagination($categoryId);
+        $playlists->withQueryString();
         
         // Count total unique playlists for 'All' pill
         $totalPlaylists = $this->playlistRepository->count();
@@ -27,11 +30,8 @@ class ScraperController extends Controller
         return view('home', compact('playlists', 'categories', 'categoryId', 'totalPlaylists'));
     }
 
-    public function scrape(\Illuminate\Http\Request $request)
+    public function scrape(ScrapeCategoryRequest $request)
     {
-        $request->validate([
-            'categories' => 'required|string',
-        ]);
 
         $input = $request->categories;
         $categoryNames = array_map('trim', explode("\n", $input));
@@ -41,6 +41,6 @@ class ScraperController extends Controller
             ScrapeCategoryJob::dispatch($name);
         }
 
-        return redirect()->back()->with('success', 'Fetching started! Please wait for the background jobs to finish.');
+        return redirect()->back()->with('success', 'تم بدء جلب البيانات! يرجى الانتظار حتى تنتهي المهام في الخلفية.');
     }
 }
