@@ -1,5 +1,20 @@
 # YouTube Course Scraper
 
+## Table of Contents
+- [Overview](#overview)
+- [🏗️ Architecture Diagrams](#️-architecture-diagrams)
+  - [1. Entity Relationship Diagram (ERD)](#1-entity-relationship-diagram-erd)
+  - [2. General System Flowchart](#2-general-system-flowchart)
+  - [3. Execution Sequence Diagram](#3-execution-sequence-diagram)
+- [🚀 Setup & Installation Documentation](#-setup--installation-documentation)
+  - [Prerequisites](#prerequisites)
+  - [Step-by-Step Installation](#step-by-step-installation)
+  - [🏃 Running the Project](#-running-the-project)
+  - [Usage](#usage)
+- [🧪 Testing Suite](#-testing-suite)
+  - [1. Database & Logic Tests (Fast)](#1-database--logic-tests-fast)
+  - [2. External Integration Tests (Slow / Live)](#2-external-integration-tests-slow--live)
+
 ## Overview
 
 **YouTube Course Scraper** is a Laravel-based web application that discovers educational YouTube playlists (courses) automatically using AI-generated search queries. Users can submit high-level topics or categories (e.g., Programming, Marketing, Engineering) into a custom Arabic Right-to-Left (RTL) interface. 
@@ -200,3 +215,29 @@ php artisan queue:work
 - Paste or type in topics/categories inside the prompt area (1 per line).
 - Hit **ابدأ الجمع** (Start Fetching). 
 - Observe the Queue terminal processing jobs! Refresh the browser once they complete to see your populated customizable grid tiles containing native YouTube links, absolute playtime calculations, and cumulative viewership!
+
+---
+
+## 🧪 Testing Suite
+
+This application utilizes **PEST PHP** for testing to ensure maximum reliability of background queues and data integrity.
+
+### 1. Database & Logic Tests (Fast)
+These are securely mocked tests that spin up incredibly fast. They intercept the queue, mock the external Artificial Intelligence and YouTube API boundaries, and specifically verify your application's internal Pivot Database architecture accurately records constraints (e.g., verifying 15 courses correctly map to 30 strictly related playlists). These run against a dedicated `youtube_scrapper_testing` MySQL database to prevent polluting your local environment.
+
+```bash
+# Run the core API and Queue Dispatch logic
+php artisan test --filter ScrapeApiTest
+
+# Run pure Job execution logic
+php artisan test tests/Unit/ScrapeCategoryJobTest.php
+```
+
+### 2. External Integration Tests (Slow / Live)
+If you need to strictly verify that your Google Cloud and YouTube v3 API Keys are active and returning the correct structured JSON boundaries, you can execute the live Integration tests. 
+*Note: This will actually consume real API quota and intentionally trigger Google rate-limiting `sleep()` methods to bypass 429 errors.*
+
+```bash
+# Force the system to actually hit the real Gemini & YouTube Data APIs
+php artisan test tests/Feature/ThirdPartyIntegrationTest.php
+```
