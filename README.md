@@ -73,7 +73,7 @@ flowchart TD
     subgraph "YouTube Discovery Pipeline"
         LoopCourse --> SearchYT[Search YouTube Playlists]
         SearchYT --> LimitYT[Extract Top 2 Matches]
-        LimitYT --> DeepScan[Deep Scan Analytics\n(Lessons, Run Time, Viewers)]
+        LimitYT --> DeepScan["Deep Scan Analytics\n(Lessons, Run Time, Viewers)"]
     end
     
     DeepScan --> Storage[(Save to Knowledge Base)]
