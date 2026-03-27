@@ -1,0 +1,108 @@
+body {
+    font-family: 'Tajawal', sans-serif;
+    background-color: #f8f9fa !important;
+}
+
+.bg-youtube {
+    background-color: #d9534f !important;
+    border-color: #d9534f !important;
+}
+
+.text-danger {
+    color: #d9534f !important;
+}
+
+.btn-white {
+    background-color: white;
+    border: 1px solid #f0f0f0;
+}
+
+.btn-white:hover {
+    background-color: #fdfdfd;
+}
+
+.hover-bg-light:hover {
+    background-color: #e9ecef !important;
+}
+
+.top-nav {
+    height: 70px;
+}
+
+.hero-section {
+    background-color: #24293e; /* Darker navy blue matching design */
+    min-height: 250px;
+}
+
+.title-arabic {
+    letter-spacing: -0.5px;
+}
+
+.mt-n5 {
+    margin-top: -100px;
+}
+
+.form-card {
+    max-width: 950px;
+    border: 1px solid rgba(0,0,0,0.02) !important;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05) !important;
+}
+
+.prompt-textarea {
+    resize: none;
+    line-height: 2;
+    min-height: 180px;
+    background-color: #fbfbfc !important;
+}
+
+.prompt-textarea:focus {
+    background-color: #fff !important;
+    border: 1px solid #d9534f !important;
+    box-shadow: 0 0 0 0.25rem rgba(217, 83, 79, 0.1) !important;
+}
+
+.form-btn-col {
+    border-color: #f4f4f4 !important;
+}
+
+.course-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+    background-color: #fff;
+    border: 1px solid rgba(0,0,0,0.04) !important;
+}
+
+.course-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08) !important;
+}
+
+.thumbnail-wrapper {
+    height: 180px;
+}
+
+.text-truncate-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    height: 3rem; /* Fallback */
+}
+
+.lesson-badge {
+    font-size: 0.70rem;
+    padding: 4px 10px;
+    background-color: #d9534f;
+}
+
+.time-badge {
+    font-size: 0.70rem;
+    background-color: #1a1e29;
+}
+
+.hover-slide svg {
+    transition: transform 0.2s;
+}
+
+.hover-slide:hover svg {
+    transform: translateX(-5px);
+}
