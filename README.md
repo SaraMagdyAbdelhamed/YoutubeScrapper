@@ -62,73 +62,57 @@ erDiagram
 
 ```mermaid
 flowchart TD
-    A[User Inputs Categories\n via Web UI] --> B[ScraperController]
-    B --> C{Split & Validate Input}
-    C --> D[Dispatch ScrapeCategoryJob]
-    D --> E[ScrapingOrchestrator]
+    Start([User Initiates Request]) --> Input[Input Target Educational Categories]
+    Input --> Validate{Clean Data?}
     
-    subgraph Background Queue worker (Timeout: 600s , Retry: 3)
-        E --> F[AiCourseGeneratorService]
-        F -- "Calls Gemini API" --> G[Return 10-20 Course Titles]
-        G --> H[Iterate over Titles]
-        
-        H --> I[YouTubeScraperService]
-        I -- "1. Search API (Max 2)" --> J[Playlist Array]
-        I -- "2. PlaylistItems API" --> K[Video ID Mappings]
-        I -- "3. Videos API" --> L[Aggregated Analytics\n(Duration, Views, Lessons)]
-        
-        L --> M[BaseRepository Patterns]
+    Validate -- Yes --> AI[AI Engine Generates Distinct Course Titles]
+    Validate -- No --> Return[Show Validation Error]
+    
+    AI --> LoopCourse[For Each Generated Course Title]
+    
+    subgraph "YouTube Discovery Pipeline"
+        LoopCourse --> SearchYT[Search YouTube Playlists]
+        SearchYT --> LimitYT[Extract Top 2 Matches]
+        LimitYT --> DeepScan[Deep Scan Analytics\n(Lessons, Run Time, Viewers)]
     end
     
-    M --> N[(MySQL Entities\nCategories/Courses/Playlists)]
-    
-    N --> O[Update UI on Refresh\nwith Clickable URL Cards]
+    DeepScan --> Storage[(Save to Knowledge Base)]
+    Storage --> UIRefresh([Populate Interactive Dashboard])
 ```
 
 ### 3. Execution Sequence Diagram
 
 ```mermaid
 sequenceDiagram
-    participant User
-    participant Controller as ScraperController
-    participant Queue as Laravel Job System
-    participant Orchestrator as ScrapingOrchestrator
-    participant AI as AiCourseGeneratorService 
-    participant YT as YouTubeScraperService 
-    participant Repo as Contract Repositories
-    participant DB as MySQL Database
+    participant Browser as Web Portal
+    participant Platform as Scraping Engine
+    participant AI as AI Model (Gemini)
+    participant YT as YouTube Network
+    participant KB as Knowledge Base
 
-    User->>Controller: POST /scrape (categories="\nMarketing")
-    Controller->>Queue: Dispatch ScrapeCategoryJob('Marketing')
-    Controller-->>User: HTTP 302 Redirect (Success Msg)
+    Browser->>Platform: Submit Educational Categories
+    Platform-->>Browser: Accept Request & Process in Background
     
-    Note over Queue, DB: Asynchronous Processing Begins
-    Queue->>Orchestrator: handle(Orchestrator, 'Marketing')
-    Orchestrator->>Repo: CategoryRepository->firstOrCreate()
-    Repo->>DB: Category Insert
+    Note over Platform, KB: Asynchronous Data Gathering Phase
+    Platform->>KB: Register Target Category
     
-    Orchestrator->>AI: generateCourses('Marketing')
-    AI-->>Orchestrator: ["Digital Marketing 101", "SEO Basics", ...]
+    Platform->>AI: Prompt: Generate relevant Course Titles
+    AI-->>Platform: Returns Array of Course Titles
     
     loop Every Course Title
-        Orchestrator->>Repo: CourseRepository->firstOrCreate()
-        Repo->>DB: Course Attachments
+        Platform->>KB: Register Derived Course
         
-        Orchestrator->>YT: searchPlaylists(CourseTitle)
-        loop Inner API Calls (Throttled HTTP::retry)
-            YT->>YT: /search (2 playlists)
-            YT->>YT: /playlistItems (lesson count)
-            YT->>YT: /videos (view_count, ISO 8601 duration parsed)
-        end
-        YT-->>Orchestrator: [Playlist Meta Data Array]
+        Platform->>YT: Search for Best Educational Playlists
+        YT-->>Platform: Return Top 2 Playlists Base Data
         
-        loop Every Playlist
-            Orchestrator->>Repo: PlaylistRepository->updateOrCreate()
-            Repo->>DB: Save deep meta (duration_seconds)
-            Orchestrator->>Repo: PlaylistRepository->attachCourse()
-            Repo->>DB: Sync Course Pivot
-        end
+        Platform->>YT: Deep Data Scan (Fetch Videos & Stats)
+        YT-->>Platform: Return Run Time, Lesson Count, Views
+        
+        Platform->>KB: Store Enriched Course Assets & Metrics
     end
+    
+    Browser->>Platform: Refresh Interactive Dashboard
+    Platform-->>Browser: Render Curated Course Catalog
 ```
 
 ---
