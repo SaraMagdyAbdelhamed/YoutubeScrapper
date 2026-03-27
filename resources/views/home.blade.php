@@ -67,8 +67,14 @@
         <div class="d-flex justify-content-between align-items-end mb-4 flex-wrap gap-3">
             <div class="text-start">
                 <h4 class="fw-bold fs-5 mb-2 text-dark">الدورات المكتشفة</h4>
-                <div class="text-muted small">تم العثور على {{ $playlists->total() }} دورة في {{ $categories->count() }}
-                    تصنيفات</div>
+                <div class="text-muted small">
+                    @if($categoryId)
+                        @php $activeCategory = $categories->firstWhere('id', $categoryId); @endphp
+                        تم العثور على {{ $playlists->total() }} دورة في تصنيف "{{ $activeCategory?->name }}"
+                    @else
+                        تم العثور على {{ $playlists->total() }} دورة في {{ $categories->count() }} تصنيفات
+                    @endif
+                </div>
             </div>
 
             <div class="d-flex gap-2 flex-wrap">
