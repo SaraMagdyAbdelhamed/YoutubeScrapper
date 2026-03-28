@@ -15,11 +15,11 @@ class AiCourseGeneratorService
     public function generateCourses(string $categoryName): array
     {
         $response = agent(
-            instructions: 'You are an educational curriculum mapping assistant. You must always generate between 10 and 20 items. Support generating in Arabic or English depending on the topic. Provide the output strictly as a JSON array of strings without markdown formatting.',
+            instructions: 'You are an educational curriculum mapping assistant. You must exactly generate between 10 and 20 items. Support generating in Arabic or English depending on the topic. Provide the output strictly as a JSON array of strings without markdown formatting.',
         )->prompt(
-            "Generate exactly 10 to 20 popular concise course titles related to the educational category: '{$categoryName}'. You MUST provide at least 10 titles and no more than 20 titles. Provide the output as a JSON array of strings ONLY. Do not wrap in markdown.",
-            provider: Lab::Gemini
-        );
+                "Generate exactly 10 to 20 popular concise course titles related to the educational category: '{$categoryName}'. You MUST provide a minimum of 10 titles, and you MUST NOT exceed a maximum of 20 titles. Provide the output as a JSON array of strings ONLY. Do not wrap in markdown.",
+                provider: Lab::Gemini
+            );
 
         $jsonString = trim((string) $response);
         // Sometimes LLMs wrap JSON in markdown blocks

@@ -41,7 +41,7 @@ class YouTubeScraperService
             return [];
         }
 
-        $items = $response->json('items', []);
+        $items = array_slice($response->json('items', []), 0, 2);
         $playlists = [];
 
         foreach ($items as $item) {
