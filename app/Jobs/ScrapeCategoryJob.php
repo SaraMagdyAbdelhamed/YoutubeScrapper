@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Laravel\Ai\Exceptions\ProviderOverloadedException;
 
 class ScrapeCategoryJob implements ShouldQueue
 {
@@ -17,7 +18,7 @@ class ScrapeCategoryJob implements ShouldQueue
     /**
      * The number of times the job may be attempted.
      */
-    public $tries = 3;
+    public $tries = 5;
 
     public function __construct(public string $categoryName)
     {
@@ -26,7 +27,21 @@ class ScrapeCategoryJob implements ShouldQueue
 
     public function handle(\App\Services\ScrapingOrchestrator $orchestrator): void
     {
-        $orchestrator->processCategory($this->categoryName);
+        try {
+            $orchestrator->processCategory($this->categoryName);
+        } catch (ProviderOverloadedException $e) {
+            // Gemini is temporarily overloaded (503). Release the job back
+            // to the queue with an exponential backoff delay so we can retry
+            // later without wasting an attempt or notifying the user of a fake failure.
+            $delaySeconds = 60 * $this->attempts(); // 60s, 120s, 180s...
+
+            \Illuminate\Support\Facades\Log::warning(
+                "Gemini overloaded for category '{$this->categoryName}'. " .
+                "Retrying in {$delaySeconds}s (attempt {$this->attempts()}/{$this->tries})."
+            );
+
+            $this->release($delaySeconds);
+        }
     }
 
     /**
@@ -42,3 +57,4 @@ class ScrapeCategoryJob implements ShouldQueue
         );
     }
 }
+
