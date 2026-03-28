@@ -73,6 +73,8 @@ erDiagram
     }
 ```
 
+The database schema is designed following the 3rd Normal Form (3NF) principles by utilizing Many-to-Many relationships to eliminate data redundancy and ensure transitive dependency resolution across Categories, Courses, and Playlists.
+
 ### 2. General System Flowchart
 
 ```mermaid
