@@ -185,8 +185,8 @@ sequenceDiagram
    At the very bottom of your `.env` file, supply your AI & YouTube credentials. The Application relies on Gemini for NLP logic.
    Google API endpoints and global environment keys are securely mapped in `config/youtube.php`.
    ```env
-   GEMINI_API_KEY="AIzaSyCkosSjdl6w8klOJXdgI8no8vMdYRjLc38"
-   YOUTUBE_API_KEY="AIzaSyDTmouW05vvU679RKnGFKd7ZuuHJvL4ihM"
+   GEMINI_API_KEY="[GCP_API_KEY]"
+   YOUTUBE_API_KEY="[GCP_API_KEY]"
    ```
    *Tip: Remember to navigate to your Google Cloud Console to restrict your API Key.*
 
