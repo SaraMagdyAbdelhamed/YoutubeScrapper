@@ -21,7 +21,7 @@
 
 The application utilizes the **Laravel AI SDK (Gemini)** to transform these generalized categories into specific, highly relevant course search terms in both Arabic and English. It then interacts with the **YouTube Data API v3** to discover and persist the top matching YouTube playlists into the database, handling duplicates seamlessly. 
 
-Recently, the engine was heavily upgraded to compute deep analytics per playlist (total lessons, cumulative views, and exact ISO 8601 cumulative durations). To support stability, **Repository Pattern Architecture** strictly governs all internal Database IO operations.
+Recently, the engine was heavily upgraded to compute deep analytics per playlist (total lessons, cumulative views, and exact ISO 8601 cumulative durations). To support stability, **Repository Pattern Architecture** strictly governs all internal Database IO operations. Additionally, the system now features **Real-time WebSockets via Laravel Reverb**, which instantly alerts frontend users if any background queue scraping processes encounter errors or API limitations.
 
 ---
 
@@ -154,9 +154,10 @@ sequenceDiagram
    ```
 
 2. **Install Dependencies**  
-   Install the necessary PHP Composer requirements.
+   Install the necessary PHP Composer and Node requirements (for the WebSocket UI).
    ```bash
    composer install
+   npm install && npm run build
    ```
 
 3. **Environment Setup**  
@@ -197,7 +198,7 @@ sequenceDiagram
 
 ### 🏃 Running the Project
 
-To execute the project, you need two separate terminal windows. One server will process the web interactions, and the other will process the heavy queued background API requests.
+To execute the project, you need three separate terminal windows. One server will process the web interactions, another will process the heavy queued background API requests, and the third runs the real-time WebSocket server.
 
 **Terminal 1: Start Laravel Development Web Server**
 ```bash
@@ -209,6 +210,12 @@ Open your browser to `http://127.0.0.1:8000/`.
 Because querying the AI and hitting YouTube's endpoints is extremely heavy (with baked-in HTTP throttles & `sleep()` sequences preventing 429 limits), all data collection operates asynchronously inside resilient timeout workers.
 ```bash
 php artisan queue:work
+```
+
+**Terminal 3: Start The WebSockets Server**
+To push real-time error notifications to the user interface when scraping tasks fail, Laravel Reverb (Pusher protocol) must be running.
+```bash
+php artisan reverb:start
 ```
 
 ### Usage

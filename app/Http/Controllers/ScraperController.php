@@ -14,16 +14,17 @@ class ScraperController extends Controller
     public function __construct(
         protected CategoryRepositoryInterface $categoryRepository,
         protected PlaylistRepositoryInterface $playlistRepository
-    ) {}
+    ) {
+    }
 
-    public function index(\Illuminate\Http\Request $request)
+    public function index(Request $request)
     {
         $categories = $this->categoryRepository->getWithCoursesCount();
         $categoryId = $request->get('category_id');
 
         $playlists = $this->playlistRepository->getFilteredWithPagination($categoryId);
         $playlists->withQueryString();
-        
+
         // Count total unique playlists for 'All' pill
         $totalPlaylists = $this->playlistRepository->count();
 
@@ -35,7 +36,7 @@ class ScraperController extends Controller
 
         $input = $request->categories;
         $categoryNames = array_map('trim', explode("\n", $input));
-        $categoryNames = array_filter($categoryNames);
+        $categoryNames = array_unique(array_filter($categoryNames));
 
         foreach ($categoryNames as $name) {
             ScrapeCategoryJob::dispatch($name);

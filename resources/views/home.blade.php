@@ -169,4 +169,16 @@
             });
         </script>
     @endif
+    
+    <script type="module">
+        document.addEventListener('DOMContentLoaded', function () {
+            // Listen for Scraper failures via Reverb WebSockets
+            if (window.Echo) {
+                window.Echo.channel('scrape-updates')
+                    .listen('.scrape.failed', (e) => {
+                        alert('❌ عذراً، فشلت عملية جلب بيانات تصنيف "' + e.categoryName + '"\nالسبب: ' + e.errorMessage);
+                    });
+            }
+        });
+    </script>
 @endsection

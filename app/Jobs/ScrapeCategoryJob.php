@@ -28,4 +28,17 @@ class ScrapeCategoryJob implements ShouldQueue
     {
         $orchestrator->processCategory($this->categoryName);
     }
+
+    /**
+     * Handle a job failure.
+     */
+    public function failed(\Throwable $exception): void
+    {
+        \Illuminate\Support\Facades\Log::error("ScrapeCategoryJob failed for category: {$this->categoryName}. Error: " . $exception->getMessage());
+        
+        \App\Events\CategoryScrapeFailed::dispatch(
+            $this->categoryName, 
+            $exception->getMessage()
+        );
+    }
 }
