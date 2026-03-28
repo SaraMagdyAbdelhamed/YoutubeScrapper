@@ -171,13 +171,24 @@
     @endif
     
     <script type="module">
-        document.addEventListener('DOMContentLoaded', function () {
-            // Listen for Scraper failures via Reverb WebSockets
-            if (window.Echo) {
-                window.Echo.channel('scrape-updates')
+        // document.addEventListener('DOMContentLoaded', function () {
+        //     // Listen for Scraper failures via Reverb WebSockets
+        //     if (window.Echo) {
+        //         window.Echo.channel('scrape-updates')
+        //             .listen('.scrape.failed', (e) => {
+        //                 alert('❌ عذراً، فشلت عملية جلب بيانات تصنيف "' + e.categoryName + '"\nالسبب: ' + e.errorMessage);
+        //             });
+        //     }
+        // });
+        window.addEventListener('load', function () {
+            if (typeof Echo !== 'undefined') {
+                Echo.channel('scrape-updates')
                     .listen('.scrape.failed', (e) => {
-                        alert('❌ عذراً، فشلت عملية جلب بيانات تصنيف "' + e.categoryName + '"\nالسبب: ' + e.errorMessage);
+                        console.log('Event received:', e); // ضيفي دي للتأكد في الـ Console
+                        alert('❌ فشلت العملية: ' + e.categoryName);
                     });
+            } else {
+                console.error('Echo is not defined. Check your build.');
             }
         });
     </script>
