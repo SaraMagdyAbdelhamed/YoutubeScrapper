@@ -183,7 +183,7 @@
         window.addEventListener('load', function () {
             if (typeof Echo !== 'undefined') {
                 Echo.channel('scrape-updates')
-                    .listen('.scrape.failed', (e) => {
+                    .listen('scrape.failed', (e) => {
                         console.log('Event received:', e); // ضيفي دي للتأكد في الـ Console
                         alert('❌ فشلت العملية: ' + e.categoryName);
                     });
